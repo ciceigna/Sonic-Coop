@@ -1,0 +1,139 @@
+
+texturaSonic.png
+size: 629, 63
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+basicMotion1
+  rotate: false
+  xy: 547, 2
+  size: 26, 59
+  orig: 59, 59
+  offset: 16, 0
+  index: -1
+basicMotion2
+  rotate: false
+  xy: 395, 2
+  size: 29, 59
+  orig: 59, 59
+  offset: 15, 0
+  index: -1
+basicMotion3
+  rotate: false
+  xy: 85, 2
+  size: 39, 59
+  orig: 59, 59
+  offset: 12, 0
+  index: -1
+basicMotion4
+  rotate: false
+  xy: 44, 2
+  size: 39, 59
+  orig: 59, 59
+  offset: 11, 0
+  index: -1
+basicMotion5
+  rotate: false
+  xy: 575, 2
+  size: 26, 59
+  orig: 59, 59
+  offset: 17, 0
+  index: -1
+basicMotion6
+  rotate: false
+  xy: 488, 2
+  size: 28, 59
+  orig: 59, 59
+  offset: 16, 0
+  index: -1
+basicMotion7
+  rotate: false
+  xy: 2, 2
+  size: 40, 59
+  orig: 59, 59
+  offset: 10, 0
+  index: -1
+basicMotion8
+  rotate: false
+  xy: 126, 2
+  size: 39, 59
+  orig: 59, 59
+  offset: 11, 0
+  index: -1
+bola1
+  rotate: false
+  xy: 426, 2
+  size: 29, 59
+  orig: 59, 59
+  offset: 16, 0
+  index: -1
+bola2
+  rotate: false
+  xy: 331, 2
+  size: 30, 59
+  orig: 59, 59
+  offset: 16, 0
+  index: -1
+bola3
+  rotate: false
+  xy: 457, 2
+  size: 29, 59
+  orig: 59, 59
+  offset: 17, 0
+  index: -1
+bola4
+  rotate: false
+  xy: 363, 2
+  size: 30, 59
+  orig: 59, 59
+  offset: 16, 0
+  index: -1
+bola5
+  rotate: false
+  xy: 299, 2
+  size: 30, 59
+  orig: 59, 59
+  offset: 16, 0
+  index: -1
+quieto
+  rotate: false
+  xy: 518, 2
+  size: 27, 59
+  orig: 59, 59
+  offset: 15, 0
+  index: -1
+salto
+  rotate: false
+  xy: 603, 2
+  size: 24, 59
+  orig: 59, 59
+  offset: 17, 0
+  index: -1
+velMax1
+  rotate: false
+  xy: 200, 2
+  size: 31, 59
+  orig: 59, 59
+  offset: 15, 0
+  index: -1
+velMax2
+  rotate: false
+  xy: 266, 2
+  size: 31, 59
+  orig: 59, 59
+  offset: 15, 0
+  index: -1
+velMax3
+  rotate: false
+  xy: 233, 2
+  size: 31, 59
+  orig: 59, 59
+  offset: 15, 0
+  index: -1
+velMax4
+  rotate: false
+  xy: 167, 2
+  size: 31, 59
+  orig: 59, 59
+  offset: 15, 0
+  index: -1
