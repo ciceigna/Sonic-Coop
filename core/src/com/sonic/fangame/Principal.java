@@ -16,15 +16,14 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import personajes.Sonic;
 
 public class Principal extends Game {
     private Music backgroundMusic;
     private SpriteBatch batch;
-    private World world;
     private OrthographicCamera camera;
     private TiledMap map;
     private TiledMapRenderer mapRenderer;
@@ -37,9 +36,10 @@ public class Principal extends Game {
     Animation<AtlasRegion> caminarAnimacion;
     TextureRegion cuadroQuieto;
 	TextureRegion cuadroQuietoInvertido;
+	Viewport viewport;
 
 
-    @Override
+	@Override
     public void create() {
         System.out.println("Create");
         float w = Gdx.graphics.getWidth();
@@ -47,11 +47,12 @@ public class Principal extends Game {
         
         float worldWidth = 800;
         float worldHeight = 600;
+
+        viewport = new FitViewport(worldWidth, worldHeight, new OrthographicCamera()); // Inicializamos el viewport
+        camera = (OrthographicCamera) viewport.getCamera(); // Obtenemos la cámara del viewport
         
-        TextureAtlas walkAtlas = new TextureAtlas(Gdx.files.internal("texturaSonic.atlas"));
-        caminarAnimacion = new Animation<>(0.1f, walkAtlas.findRegion("basicMotion1"));
-        caminarAnimacion = new Animation<>(0.1f, walkAtlas.findRegion("basicMotion2"));
-        caminarAnimacion = new Animation<>(0.1f, walkAtlas.findRegion("basicMotion3"));
+        TextureAtlas caminaAtlas = new TextureAtlas(Gdx.files.internal("texturaSonic.atlas"));
+        caminarAnimacion = new Animation<>(0.1f, caminaAtlas.findRegion("basicMotion1"));
         Texture texturaQuieta = new Texture(Gdx.files.internal("spritesSonic/quieto.png"));
         cuadroQuieto = new TextureRegion(texturaQuieta);
         cuadroQuietoInvertido = new TextureRegion(texturaQuieta);
@@ -63,14 +64,12 @@ public class Principal extends Game {
         
         // Configurar opciones de la música de fondo
         backgroundMusic.setLooping(true); // Reproducir en bucle
-        backgroundMusic.setVolume(0.3f); // Ajustar el volumen (0.0 a 1.0)
+        backgroundMusic.setVolume(0.1f); // Ajustar el volumen (0.0 a 1.0)
         
         // Reproducir la música de fondo
         backgroundMusic.play();
         
-        world = new World(new Vector2(0, -9.81f), true);
         
-        camera = new OrthographicCamera();
         camera.setToOrtho(false, w, h);
         camera.update();
         
@@ -83,8 +82,9 @@ public class Principal extends Game {
         
         batch = new SpriteBatch(); // Inicializamos el SpriteBatch
         
-        sonic = new Sonic(16, 736); // Crear instancia de Sonic en posición (16, 736) (ajústalo según tu diseño de nivel)
+        sonic = new Sonic(16, 753); // Crear instancia de Sonic en posición (16, 736) (ajústalo según tu diseño de nivel)
     }
+
 
     @Override
     public void render() {
@@ -94,7 +94,7 @@ public class Principal extends Game {
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.D)) {
             camina = true;
             miraDerecha = Gdx.input.isKeyPressed(Input.Keys.D); // Dirección del movimiento (derecha o izquierda)
-            float sonicSpeed = 2f; // Velocidad de movimiento de Sonic
+            float sonicSpeed = 3f; // Velocidad de movimiento de Sonic
             if (Gdx.input.isKeyPressed(Input.Keys.A)) {
                 sonic.x -= sonicSpeed; // Mover a la izquierda
             }
@@ -139,6 +139,12 @@ public class Principal extends Game {
         batch.end();
     }
 
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height); // Actualizamos el viewport al cambiar el tamaño de la ventana
+        camera.position.set(sonic.x + sonic.getWidth() / 3, sonic.y + sonic.getHeight() / 3, 0);
+    }
+    
     @Override
     public void dispose() {
         System.out.println("Dispose");
