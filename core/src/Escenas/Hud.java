@@ -1,4 +1,4 @@
-package Escenas;
+ package Escenas;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -7,37 +7,58 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.sonic.fangame.SonicCoop;
+import com.sonic.fangame.SonicProject;
 
-public class Hud {
-	
+public class Hud implements Disposable{
 	public Stage escenario;
 	private Viewport viewport;
 	
 	private float cuentaTiempo;
 	private Integer puntaje;
-	
-	Label etiquetaPuntaje;
+
 	Label etiquetaTiempo;
-	Label etiquetaEstrellas;
+	Label etiquetaTiempepopo;
+	Label etiquetaPuntaje;
+	Label etiquetaPunputapajepe;
+	Label etiquetaAnillos;
+	Label etiquetaApanipillospo;
 	
 	public Hud(SpriteBatch sb) {
 		cuentaTiempo = 0;
 		puntaje = 0;
 		
-		viewport = new FitViewport(SonicCoop.anchoMundo,SonicCoop.altoMundo,new OrthographicCamera());
+		viewport = new FitViewport(SonicProject.V_ANCHO,SonicProject.V_ALTO,new OrthographicCamera());
 		escenario = new Stage(viewport, sb);
 		
-		Table table = new Table();
-		table.top();
-		table.setFillParent(true);
+		Table mesa = new Table();
+		mesa.top();
+		mesa.left();
+		mesa.setFillParent(true);
 		
-		etiquetaPuntaje = new Label(String.format("%06d", puntaje), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-		etiquetaTiempo = new Label(String.format("%06d", cuentaTiempo), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-		etiquetaEstrellas = new Label(String.format("%02d", cuentaTiempo), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+
+		etiquetaTiempepopo = new Label(String.format("%06f", cuentaTiempo), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		etiquetaPunputapajepe = new Label(String.format("%06d", puntaje), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		etiquetaPuntaje = new Label("  PUNTAJE", new Label.LabelStyle(new BitmapFont(), Color.YELLOW));
+		etiquetaTiempo = new Label("TIEMPO", new Label.LabelStyle(new BitmapFont(), Color.YELLOW));
+		etiquetaAnillos = new Label(" ANILLOS", new Label.LabelStyle(new BitmapFont(), Color.YELLOW));
 		
-		escenario.addActor(table);
+		mesa.add(etiquetaPuntaje);
+		mesa.add(etiquetaPunputapajepe);
+		mesa.row();
+		mesa.add(etiquetaTiempo);
+		mesa.add(etiquetaTiempepopo);
+		mesa.row();
+		mesa.add(etiquetaAnillos);
+		
+		escenario.addActor(mesa);
+	}
+
+	@Override
+	public void dispose() {
+		escenario.dispose();
+		
 	}
 }
