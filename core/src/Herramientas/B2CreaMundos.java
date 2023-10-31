@@ -10,9 +10,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.sonic.fangame.SonicProject;
-
-import Sprites.Anillos;
-
 public class B2CreaMundos {
 
 	public B2CreaMundos(World mundo, TiledMap mapa) {
@@ -20,10 +17,10 @@ public class B2CreaMundos {
 		PolygonShape forma = new PolygonShape();
 		FixtureDef fdef = new FixtureDef();
 		Body cuerpo;
-		
+	
 		//colinas
-		for(MapObject object : mapa.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)) {
-			Rectangle rect = ((RectangleMapObject) object).getRectangle();
+		for(MapObject objeto : mapa.getLayers().get("colinas").getObjects().getByType(RectangleMapObject.class)){
+			Rectangle rect = ((RectangleMapObject) objeto).getRectangle();
 		
 			cdef.type = BodyDef.BodyType.StaticBody;
 			cdef.position.set(rect.getX() + rect.getWidth() / 2 / SonicProject.PPM, rect.getY() + rect.getHeight() / 2 / SonicProject.PPM);
@@ -36,8 +33,8 @@ public class B2CreaMundos {
 		}
 		
 		//piso
-		for(MapObject object : mapa.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)) {
-			Rectangle rect = ((RectangleMapObject) object).getRectangle();
+		for(MapObject objeto : mapa.getLayers().get("piso").getObjects().getByType(RectangleMapObject.class)){
+			Rectangle rect = ((RectangleMapObject) objeto).getRectangle();
 		
 			cdef.type = BodyDef.BodyType.StaticBody;
 			cdef.position.set(rect.getX() + rect.getWidth() / 2 / SonicProject.PPM, rect.getY() + rect.getHeight() / 2 / SonicProject.PPM);
@@ -49,10 +46,6 @@ public class B2CreaMundos {
 			cuerpo.createFixture(fdef);
 		}
 		
-		for(MapObject object : mapa.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
-			Rectangle rect = ((RectangleMapObject) object).getRectangle();
-			
-			new Anillos(mundo,mapa,rect);
-		}
+
 	}
 }

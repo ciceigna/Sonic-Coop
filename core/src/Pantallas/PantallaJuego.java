@@ -1,8 +1,11 @@
 package Pantallas;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -15,19 +18,18 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sonic.fangame.SonicProject;
-
-
 import Escenas.Hud;
 import Herramientas.B2CreaMundos;
+import Herramientas.WorldContactListener;
 import Sprites.Sonic;
 
 public class PantallaJuego implements Screen {
 	//base
 	private SonicProject juego;
 	private OrthographicCamera camJuego;
-	private Viewport vistaJuego;
-	private Sonic jugador; 
+	private Viewport vistaJuego; 
 	private TextureAtlas atlas;
+	private Sonic jugador;
 	//hud
 	private Hud hud;
 	
@@ -40,11 +42,15 @@ public class PantallaJuego implements Screen {
 	private World mundo;
 	private Box2DDebugRenderer b2dr;
 	
+	private float tiempoEspera = 0.85f;
+	private boolean cambioPantalla = false;
+	
+	private Music musica;
+	
 	public PantallaJuego(SonicProject juego) {
+        this.juego = juego;
 		atlas = new TextureAtlas("texturaSonic.atlas");
 		
-		//base
-		this.juego = juego;
 		camJuego = new OrthographicCamera();
 		vistaJuego = new FitViewport(SonicProject.V_ANCHO / SonicProject.PPM,SonicProject.V_ALTO / SonicProject.PPM,camJuego);
 		
@@ -67,6 +73,8 @@ public class PantallaJuego implements Screen {
 		
 		jugador = new Sonic(mundo, this);
 		
+		mundo.setContactListener(new WorldContactListener());
+		
 	}
 	
 	public TextureAtlas getAtlas() {
@@ -78,12 +86,19 @@ public class PantallaJuego implements Screen {
 	}
 	
 	public void handleInput(float dt) {
-		if(Gdx.input.isKeyJustPressed(Input.Keys.UP))
-			jugador.b2cuerpo.applyLinearImpulse(new Vector2(0, 4f), jugador.b2cuerpo.getWorldCenter(), true);
-		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-			jugador.b2cuerpo.applyLinearImpulse(new Vector2(0.1f, 0), jugador.b2cuerpo.getWorldCenter(), true);
-		if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
-			jugador.b2cuerpo.applyLinearImpulse(new Vector2(-0.1f, 0), jugador.b2cuerpo.getWorldCenter(), true);
+		if(jugador.estadoActual != Sonic.Estado.MUERTO) {
+			if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+				jugador.b2cuerpo.applyLinearImpulse(new Vector2(0, 6f), jugador.b2cuerpo.getWorldCenter(), true);
+				SonicProject.admin.get("audio/sonidos/s_salto.wav", Sound.class).play();
+			}
+			if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+				jugador.golpe();
+				jugador.b2cuerpo.applyLinearImpulse(new Vector2(0.1f, 0), jugador.b2cuerpo.getWorldCenter(), true);
+			}
+			if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+				jugador.b2cuerpo.applyLinearImpulse(new Vector2(-0.1f, 0), jugador.b2cuerpo.getWorldCenter(), true);
+			}
+		}
 	}
 	
 	public void update (float dt) {
@@ -118,6 +133,24 @@ public class PantallaJuego implements Screen {
 		
 		juego.batch.setProjectionMatrix(hud.escenario.getCamera().combined);
 		hud.escenario.draw();
+		
+	    if (FinJuego()) {
+	        tiempoEspera -= delta; // Reduzca el tiempo de espera
+
+	        if (tiempoEspera <= 0 && !cambioPantalla) {
+	            // Cuando el tiempo de espera haya transcurrido y no hayamos cambiado de pantalla aún
+	            juego.setScreen(new PantallaGameOver(juego));
+	            cambioPantalla = true; // Evita que cambiemos de pantalla varias veces
+	        }
+	    }
+	}
+	
+	public boolean FinJuego() {
+		if(jugador.estadoActual == Sonic.Estado.MUERTO) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 
 	@Override

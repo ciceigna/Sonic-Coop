@@ -27,11 +27,11 @@
             "scaleInEditor": 1
         },
         "prueba.tmx": {
-            "scale": 0.125,
-            "selectedLayer": 2,
+            "scale": 0.75,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": -368,
-                "y": 1648
+                "x": 622.6666666666667,
+                "y": 1174.6666666666665
             }
         }
     },
@@ -42,13 +42,12 @@
     "map.tileWidth": 16,
     "map.width": 90,
     "openFiles": [
-        "prueba.tmx",
-        "cielo.tsx"
+        "prueba.tmx"
     ],
     "project": "mapapapaS1.tiled-project",
     "recentFiles": [
-        "cielo.tsx",
         "prueba.tmx",
+        "cielo.tsx",
         "exoplanetaDeforestadoTiles.tsx"
     ],
     "tileset.lastUsedFilter": "Archivos de conjuntos de patrones Tiled (*.tsx *.xml)",

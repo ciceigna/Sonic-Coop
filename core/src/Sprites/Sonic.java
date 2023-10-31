@@ -1,29 +1,42 @@
 package Sprites;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.sonic.fangame.SonicProject;
 import com.badlogic.gdx.utils.Array;
 import Pantallas.PantallaJuego;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 
 public class Sonic extends Sprite {
-	public enum Estado{CAYENDO,SALTANDO,PARADO,CORRIENDO}
+	public enum Estado{CAYENDO,SALTANDO,PARADO,CORRIENDO, VELOCIDAD_MAXIMA, MUERTO}
 	public Estado estadoActual;
 	public Estado estadoPrevio;
 	public World mundo;
 	public Body b2cuerpo;
+	
 	private TextureRegion sonicQuieto;
+	private TextureRegion sonicMuerto;
 	private Animation<TextureRegion> sonicCorre;
 	private Animation<TextureRegion> sonicSalta;
+	private Animation<TextureRegion> sonicVelMax;
+	
 	private float estadoTiempo;
+	private float velocidadMaxima = 5.0f; // Define tu velocidad máxima
+	private float tiempoCorriendo = 0;
+	private float tiempoMaximo = 1.0f; // Tiempo en segundos antes de mostrar "velMax"
+	private boolean murioSonic;
 	
 	public Sonic(World mundo, PantallaJuego pantalla) {
 	    super(pantalla.getAtlas().findRegion("basicMotion1")); // Inicializa con la primera región de "basicMotion"
@@ -53,31 +66,78 @@ public class Sonic extends Sprite {
 	    frames.clear();
 
 	    defineSonic();
-	    sonicQuieto = new TextureRegion(getTexture(), 518, 2, 27, 59);
-	    setBounds(0, 0, 27 / SonicProject.PPM, 59 / SonicProject.PPM);
+	    sonicQuieto = new TextureRegion(getTexture(), 1410, 2, 27, 59);
+	    sonicMuerto = new TextureRegion(getTexture(), 768, 2, 34, 59);
+	    setBounds(0, 0, getWidth() / SonicProject.PPM, getHeight() / SonicProject.PPM);
 	    setRegion(sonicQuieto);
+	    
+	    Array<TextureAtlas.AtlasRegion> regionesVelMax = new Array<>();
+	    for (int i = 1; i <= 4; i++) {
+	    	regionName = "velMax" + i;
+	        regionesVelMax.add(pantalla.getAtlas().findRegion(regionName));
+	    }
+	    sonicVelMax = new Animation<TextureRegion>(0.08f, regionesVelMax);
 	}
 
+	public void golpe() {
+//		if(tieneAnillos) {
+//			tieneAnillos=false;
+//			
+//		}
+//		else {
+			Filter filtro = new Filter();
+			filtro.maskBits = SonicProject.BIT_VACIO;
+
+			SonicProject.admin.get("audio/sonidos/s_muerte.wav", Sound.class).play();
+			for(Fixture fixture : b2cuerpo.getFixtureList()) {
+				fixture.setFilterData(filtro);
+			}
+			b2cuerpo.applyLinearImpulse(new Vector2(0, 4f), b2cuerpo.getWorldCenter(), true);
+			murioSonic = true;
+//			}
+	}
 	
 	public void update(float dt) {
 		setPosition(b2cuerpo.getPosition().x - getWidth() / 2, b2cuerpo.getPosition().y - getHeight() / 2);
 		setRegion(getFrame(dt));
+		
+		 if (b2cuerpo.getLinearVelocity().x > velocidadMaxima) {
+		        tiempoCorriendo += dt;
+
+		        if (tiempoCorriendo >= tiempoMaximo && estadoActual != Estado.VELOCIDAD_MAXIMA) {
+		            estadoPrevio = estadoActual;
+		            estadoActual = Estado.VELOCIDAD_MAXIMA;
+		        }
+		    } else {
+		        tiempoCorriendo = 0;
+
+		        // Volver al estado anterior cuando la velocidad baja
+		        if (estadoActual == Estado.VELOCIDAD_MAXIMA) {
+		            estadoActual = estadoPrevio;
+		        }
+		    }
 	}
 	
 	public TextureRegion getFrame(float dt) {
 	    estadoActual = getEstado();
 
 	    TextureRegion region;
-	    switch(estadoActual) {
+	    switch (estadoActual) {
+		    case MUERTO:
+		    	region = sonicMuerto;
+		    	break;
 	        case SALTANDO:
 	            region = sonicSalta.getKeyFrame(estadoTiempo, true);
 	            break;
 	        case CORRIENDO:
 	            region = sonicCorre.getKeyFrame(estadoTiempo, true);
 	            break;
+	        case VELOCIDAD_MAXIMA:
+	            region = sonicVelMax.getKeyFrame(estadoTiempo, true);
+	            break;
 	        case CAYENDO:
 	        case PARADO:
-	        default: 
+	        default:
 	            region = sonicQuieto;
 	            break;
 	    }
@@ -99,7 +159,9 @@ public class Sonic extends Sprite {
 
 	
 	public Estado getEstado() {
-		if(b2cuerpo.getLinearVelocity().y > 0 || (b2cuerpo.getLinearVelocity().y < 0 && estadoPrevio == Estado.SALTANDO)) 
+		if(murioSonic)
+			return Estado.MUERTO;
+		else if(b2cuerpo.getLinearVelocity().y > 0 || (b2cuerpo.getLinearVelocity().y < 0 && estadoPrevio == Estado.SALTANDO)) 
 			return Estado.SALTANDO;
 		else if(b2cuerpo.getLinearVelocity().y < 0)
 			return Estado.CAYENDO;
@@ -111,15 +173,23 @@ public class Sonic extends Sprite {
 	
 	public void defineSonic() {
 		BodyDef cdef = new BodyDef();
-		cdef.position.set(32 / SonicProject.PPM,753 / SonicProject.PPM);
+		cdef.position.set(32 / SonicProject.PPM,775 / SonicProject.PPM);
 		cdef.type = BodyDef.BodyType.DynamicBody;
 		b2cuerpo = mundo.createBody(cdef);
 		
 		FixtureDef fdef = new FixtureDef();
 		CircleShape forma = new CircleShape();
-		forma.setRadius(18 / SonicProject.PPM);
+		forma.setRadius(16 / SonicProject.PPM);
 		
 		fdef.shape = forma;
 		b2cuerpo.createFixture(fdef);
+		
+		EdgeShape cabeza = new EdgeShape();
+		cabeza.set(new Vector2(-2 / SonicProject.PPM, 5 / SonicProject.PPM), new Vector2(2 / SonicProject.PPM, 5 / SonicProject.PPM));
+		fdef.shape = cabeza;
+		fdef.isSensor = true;
+		b2cuerpo.createFixture(fdef).setUserData("cabeza");
 	}
+	
+	
 }
