@@ -18,6 +18,7 @@ public class Hud implements Disposable{
 	
 	private float cuentaTiempo;
 	private Integer puntaje;
+	private Integer anillos;
 
 	Label etiquetaTiempo;
 	Label etiquetaTiempepopo;
@@ -29,6 +30,7 @@ public class Hud implements Disposable{
 	public Hud(SpriteBatch sb) {
 		cuentaTiempo = 0;
 		puntaje = 0;
+		anillos = 0;
 		
 		viewport = new FitViewport(SonicProject.V_ANCHO,SonicProject.V_ALTO,new OrthographicCamera());
 		escenario = new Stage(viewport, sb);
@@ -41,6 +43,7 @@ public class Hud implements Disposable{
 
 		etiquetaTiempepopo = new Label(String.format("%06f", cuentaTiempo), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 		etiquetaPunputapajepe = new Label(String.format("%06d", puntaje), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		etiquetaApanipillospo = new Label(String.format("%01d", anillos = 0), new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 		etiquetaPuntaje = new Label("  PUNTAJE", new Label.LabelStyle(new BitmapFont(), Color.YELLOW));
 		etiquetaTiempo = new Label("TIEMPO", new Label.LabelStyle(new BitmapFont(), Color.YELLOW));
 		etiquetaAnillos = new Label(" ANILLOS", new Label.LabelStyle(new BitmapFont(), Color.YELLOW));
@@ -52,8 +55,16 @@ public class Hud implements Disposable{
 		mesa.add(etiquetaTiempepopo);
 		mesa.row();
 		mesa.add(etiquetaAnillos);
+		mesa.add(etiquetaApanipillospo);
 		
 		escenario.addActor(mesa);
+	}
+	
+	public void update(float dt) {
+		   cuentaTiempo += dt;
+		    int minutos = (int) cuentaTiempo / 60;
+		    int segundos = (int) cuentaTiempo % 60;
+		    etiquetaTiempepopo.setText(String.format("%02d:%02d", minutos, segundos));
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 package Pantallas;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -10,52 +10,61 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.reactive.sonic.red.HiloCliente;
+import utiles.Global;
+import utiles.Utiles;
+
 import com.sonic.fangame.SonicProject;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;	
 
 public class PantallaMenu extends ScreenAdapter {
     private Stage stage;
     private Table table;
-    private SonicProject juego;
+    private HiloCliente hc;
     Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
     public PantallaMenu(final SonicProject juego) {
-        this.juego = juego;
         stage = new Stage(new FitViewport(SonicProject.V_ANCHO, SonicProject.V_ALTO));
         Gdx.input.setInputProcessor(stage);
         table = new Table();
         table.setFillParent(true);
-        final Game finalJuego = juego; // Declarar finalJuego como final
         
-        TextButton jugarLocalButton = new TextButton("Jugar Local", skin);
-        jugarLocalButton.addListener(new ClickListener() {
+        SonicProject.admin.get("audio/musica/gameOver.mp3", Music.class).stop();
+        SonicProject.admin.get("audio/musica/menu.mp3", Music.class).play();
+        
+        TextButton botonJugarLocal = new TextButton("Jugar Local", skin);
+        botonJugarLocal.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 juego.setScreen(new PantallaJuego(juego));
             }
         });
 
-        // Botón para ajustes (deberás implementar esta pantalla)
-//        TextButton ajustesButton = new TextButton("Ajustes", skin);
-//        ajustesButton.addListener(new ClickListener() {
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                // Implementa la pantalla de ajustes aquí
-//            }
-//        });
-
         // Botón para conectar en red (PantallaJuego temporal)
-        TextButton conectarButton = new TextButton("Conectar", skin);
-        conectarButton.addListener(new ClickListener() {
+        TextButton botonConectar = new TextButton("Jugar en Linea", skin);
+        botonConectar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                juego.setScreen(new PantallaJuego(juego));
+        		if(Global.empieza) {
+                	juego.setScreen(new PantallaJuego(juego));
+                }else {
+                	juego.setScreen(new PantallaEspera(juego));
+                }
+            }
+        });
+
+        // Botón para ajustes
+        TextButton botonAjustes = new TextButton("Ajustes", skin);
+        botonAjustes.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+            	juego.setScreen(new PantallaAjustes(juego));
             }
         });
 
         // Botón para salir
-        TextButton salirButton = new TextButton("Salir", skin);
-        salirButton.addListener(new ClickListener() {
+        TextButton botonSalir = new TextButton("Salir", skin);
+        botonSalir.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit(); // Cierra la aplicación
@@ -63,10 +72,10 @@ public class PantallaMenu extends ScreenAdapter {
         });
 
         // Agrega los botones a la tabla
-        table.add(jugarLocalButton).pad(10f).row();
-//        table.add(ajustesButton).pad(10f).row();
-        table.add(conectarButton).pad(10f).row();
-        table.add(salirButton).pad(10f).row();
+        table.add(botonJugarLocal).pad(10f).row();
+        table.add(botonConectar).pad(10f).row();
+        table.add(botonAjustes).pad(10f).row();
+        table.add(botonSalir).pad(10f).row();
 
         stage.addActor(table);
     }
@@ -91,5 +100,6 @@ public class PantallaMenu extends ScreenAdapter {
     @Override
     public void dispose() {
         stage.dispose();
+        skin.dispose();
     }
 }

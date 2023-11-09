@@ -14,6 +14,15 @@ public class SonicProject extends Game {
 	
 	//Box2D Collision Bits
 	public static final short BIT_VACIO = 0;
+	public static final short BIT_PISO = 1;
+	public static final short BIT_SONIC = 2;
+	public static final short BIT_ANILLO = 8;
+	public static final short BIT_DESTRUIDO = 16;
+	public static final short BIT_OBJETO = 32;
+	public static final short BIT_ENEMIGO = 64;
+	public static final short BIT_CAPOCHA_E = 128;
+	public static final short BIT_ITEM = 256;
+	public static final short BIT_CAPOCHA_J = 512;
 	
 	public SpriteBatch batch;
 	
@@ -24,7 +33,9 @@ public class SonicProject extends Game {
 		batch = new SpriteBatch();
 		
 		admin = new AssetManager();
-		admin.load("audio/musica/a.wav", Music.class);
+		admin.load("audio/musica/menu.mp3", Music.class);
+		admin.load("audio/musica/pantallaJuego.mp3", Music.class);
+		admin.load("audio/musica/gameOver.mp3", Music.class);
 		admin.load("audio/sonidos/s_anillo.wav", Sound.class);
 		admin.load("audio/sonidos/s_muerte.wav", Sound.class);
 		admin.load("audio/sonidos/s_salto.wav", Sound.class);

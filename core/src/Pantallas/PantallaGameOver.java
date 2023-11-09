@@ -1,8 +1,8 @@
 package Pantallas;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -16,14 +16,15 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sonic.fangame.SonicProject;
 
 public class PantallaGameOver extends ScreenAdapter {
-    private final SonicProject juego;
     private Stage stage;
     Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
     public PantallaGameOver(final SonicProject juego) {
-        this.juego = juego;
         stage = new Stage(new FitViewport(SonicProject.V_ANCHO, SonicProject.V_ALTO));
 
+        SonicProject.admin.get("audio/musica/pantallaJuego.mp3", Music.class).stop();
+        SonicProject.admin.get("audio/musica/gameOver.mp3", Music.class).play();
+        
         Gdx.input.setInputProcessor(stage);
 
         // Cargar la textura "gOver" de objetos.png usando el archivo .atlas

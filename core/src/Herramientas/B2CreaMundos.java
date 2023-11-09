@@ -18,34 +18,34 @@ public class B2CreaMundos {
 		FixtureDef fdef = new FixtureDef();
 		Body cuerpo;
 	
-		//colinas
-		for(MapObject objeto : mapa.getLayers().get("colinas").getObjects().getByType(RectangleMapObject.class)){
-			Rectangle rect = ((RectangleMapObject) objeto).getRectangle();
-		
-			cdef.type = BodyDef.BodyType.StaticBody;
-			cdef.position.set(rect.getX() + rect.getWidth() / 2 / SonicProject.PPM, rect.getY() + rect.getHeight() / 2 / SonicProject.PPM);
-		
-			cuerpo = mundo.createBody(cdef);
-			
-			forma.setAsBox(rect.getWidth() / 2  / SonicProject.PPM, rect.getHeight() / 2  / SonicProject.PPM);
-			fdef.shape = forma;
-			cuerpo.createFixture(fdef);
-		}
-		
 		//piso
 		for(MapObject objeto : mapa.getLayers().get("piso").getObjects().getByType(RectangleMapObject.class)){
 			Rectangle rect = ((RectangleMapObject) objeto).getRectangle();
 		
 			cdef.type = BodyDef.BodyType.StaticBody;
 			cdef.position.set(rect.getX() + rect.getWidth() / 2 / SonicProject.PPM, rect.getY() + rect.getHeight() / 2 / SonicProject.PPM);
-		
-			cuerpo = mundo.createBody(cdef);
+			
 			
 			forma.setAsBox(rect.getWidth() / 2 / SonicProject.PPM, rect.getHeight() / 2 / SonicProject.PPM);
 			fdef.shape = forma;
+			
+			cuerpo = mundo.createBody(cdef);
 			cuerpo.createFixture(fdef);
 		}
 		
+		//colinas
+//		for(MapObject objeto : mapa.getLayers().get("colinas").getObjects().getByType(RectangleMapObject.class)){
+//			Rectangle rect = ((RectangleMapObject) objeto).getRectangle();
+//		
+//			cdef.type = BodyDef.BodyType.StaticBody;
+//			cdef.position.set(rect.getX() + rect.getWidth() / 2 / SonicProject.PPM, rect.getY() + rect.getHeight() / 2 / SonicProject.PPM);
+//		
+//			cuerpo = mundo.createBody(cdef);
+//			
+//			forma.setAsBox(rect.getWidth() / 2  / SonicProject.PPM, rect.getHeight() / 2  / SonicProject.PPM);
+//			fdef.shape = forma;
+//			cuerpo.createFixture(fdef);
+//		}
 
 	}
 }

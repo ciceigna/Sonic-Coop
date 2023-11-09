@@ -173,7 +173,7 @@ public class Sonic extends Sprite {
 	
 	public void defineSonic() {
 		BodyDef cdef = new BodyDef();
-		cdef.position.set(32 / SonicProject.PPM,775 / SonicProject.PPM);
+		cdef.position.set(200 / SonicProject.PPM,775 / SonicProject.PPM);
 		cdef.type = BodyDef.BodyType.DynamicBody;
 		b2cuerpo = mundo.createBody(cdef);
 		
