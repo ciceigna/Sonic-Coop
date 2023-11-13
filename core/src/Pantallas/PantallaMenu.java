@@ -32,7 +32,7 @@ public class PantallaMenu extends ScreenAdapter {
         SonicProject.admin.get("audio/musica/gameOver.mp3", Music.class).stop();
         SonicProject.admin.get("audio/musica/menu.mp3", Music.class).play();
         
-        TextButton botonJugarLocal = new TextButton("Jugar Local", skin);
+        TextButton botonJugarLocal = new TextButton("puto de fito", skin);
         botonJugarLocal.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -41,15 +41,11 @@ public class PantallaMenu extends ScreenAdapter {
         });
 
         // Botón para conectar en red (PantallaJuego temporal)
-        TextButton botonConectar = new TextButton("Jugar en Linea", skin);
+        TextButton botonConectar = new TextButton("Conectarse", skin);
         botonConectar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-        		if(Global.empieza) {
-                	juego.setScreen(new PantallaJuego(juego));
-                }else {
-                	juego.setScreen(new PantallaEspera(juego));
-                }
+                juego.setScreen(new PantallaJuego(juego));
             }
         });
 

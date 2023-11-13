@@ -92,7 +92,7 @@ public class Sonic extends Sprite {
 			for(Fixture fixture : b2cuerpo.getFixtureList()) {
 				fixture.setFilterData(filtro);
 			}
-			b2cuerpo.applyLinearImpulse(new Vector2(0, 4f), b2cuerpo.getWorldCenter(), true);
+			b2cuerpo.applyLinearImpulse(new Vector2(0, 3f), b2cuerpo.getWorldCenter(), true);
 			murioSonic = true;
 //			}
 	}

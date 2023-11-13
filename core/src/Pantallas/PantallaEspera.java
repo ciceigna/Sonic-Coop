@@ -22,8 +22,6 @@ public class PantallaEspera extends ScreenAdapter {
     public PantallaEspera(SonicProject juego) {
         stage = new Stage();
         this.juego = juego;
-        hc = new HiloCliente();
-        hc.start();
 
         Gdx.input.setInputProcessor(stage);
 

@@ -39,6 +39,7 @@ public class SonicProject extends Game {
 		admin.load("audio/sonidos/s_anillo.wav", Sound.class);
 		admin.load("audio/sonidos/s_muerte.wav", Sound.class);
 		admin.load("audio/sonidos/s_salto.wav", Sound.class);
+		admin.load("audio/sonidos/t_salto.wav", Sound.class);
 		admin.finishLoading();
 		
 		setScreen(new PantallaTitulo(this));
