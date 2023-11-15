@@ -6,8 +6,11 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
 import Pantallas.PantallaJuego;
+import Sprites.Sonic;
+import Sprites.Tails;
 import utiles.Global;
 
 public class HiloCliente extends Thread {
@@ -45,29 +48,46 @@ public class HiloCliente extends Thread {
 	}
 
 	private void procesarMensaje(DatagramPacket dp) {
-		String msg = (new String(dp.getData())).trim();
-		
-		String[] mensajeParametrizado = msg.split("-");
-		if(mensajeParametrizado.length<2) {
-			if(msg.equals("OK")) {
-				ipServidor = dp.getAddress();
-			} else if(msg.equals("Empieza")) {
-				System.out.println("Llega EMPIEZA");
-				Global.empieza = true;
-			}
-		} else {
-			if(mensajeParametrizado[0].equals("Actualizar")) {
-				if(mensajeParametrizado[1].equals("jugador")) {
-					float posX = Float.parseFloat(mensajeParametrizado[2]);
-					app.jugador.setX(posX);
-				}else if (mensajeParametrizado[4].equals("jugadorAlt")) {
-					float posX = Float.parseFloat(mensajeParametrizado[5]);
-					app.jugadorAlt.setX(posX);
-				}
-			}
-		}
-		
+
+	    String msg = (new String(dp.getData())).trim();
+        Sonic jugador = app.jugador;
+		Tails jugadorAlt = app.jugadorAlt;
+		OrthographicCamera camJuego = app.camJuego;
+        String[] mensajeParametrizado = msg.split("-");
+        
+	    if (mensajeParametrizado.length < 2) {
+	        if (msg.equals("OK")) {
+	            ipServidor = dp.getAddress();
+	        } else if (msg.equals("Empieza")) {
+	            Global.empieza = true;
+	        }
+	    } else if (mensajeParametrizado[0].equals("Actualizar")) {
+	        	float posX = Float.parseFloat(mensajeParametrizado[2]);
+		        float posY = Float.parseFloat(mensajeParametrizado[3]);
+		        float camX = Float.parseFloat(mensajeParametrizado[2]);
+		        float camY = Float.parseFloat(mensajeParametrizado[2]);
+		        
+	            if (mensajeParametrizado[1].equals("jugador")) {
+	                jugador.setPosition(posX, posY);
+	                
+	            } else if (mensajeParametrizado[1].equals("jugadorAlt")) {
+	            	jugadorAlt.setPosition(posX, posY);
+	                
+	            } else if(mensajeParametrizado[1].equals("camara")) {
+            		camJuego.position.x = camX;
+            		camJuego.position.y = camY;
+	            }
+	     } else if (mensajeParametrizado[0].equals("Estado")) {
+	        	if (mensajeParametrizado[1].equals("jugador")) {
+	        		Sonic.Estado estado = Sonic.Estado.valueOf(mensajeParametrizado[2]);
+	                jugador.estadoActual = estado;
+	            } else if (mensajeParametrizado[1].equals("jugadorAlt")) {
+	   	    	 	Tails.Estado estado = Tails.Estado.valueOf(mensajeParametrizado[2]);
+	   	    	 	jugadorAlt.estadoActual = estado;
+	            }
+	        }
 	}
+
 	
 	public void enviarMensaje(String mensaje) {
 		byte[] data = mensaje.getBytes();

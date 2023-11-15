@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -22,11 +20,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.reactive.sonic.red.HiloCliente;
 import com.sonic.fangame.SonicProject;
-
 import Escenas.FondoParallax;
 import Escenas.Hud;
-import Herramientas.B2CreaMundos;
-import Herramientas.WorldContactListener;
 import Sprites.Sonic;
 import Sprites.Tails;
 import utiles.Global;
@@ -34,7 +29,7 @@ import utiles.Global;
 public class PantallaJuego implements Screen {
 	//base
 	private SonicProject juego;
-	private OrthographicCamera camJuego;
+	public OrthographicCamera camJuego;
 	private Viewport vistaJuego; 
 	private TextureAtlas atlas;
 	private TextureAtlas atlasAlt;
@@ -65,6 +60,7 @@ public class PantallaJuego implements Screen {
 	private boolean cambioPantalla = false;
 	
 	public PantallaJuego(SonicProject juego) {
+		
         this.juego = juego;
         
         esperaTextura = new Texture("esperaImagen.png");
@@ -79,9 +75,6 @@ public class PantallaJuego implements Screen {
 		camJuego = new OrthographicCamera();
 		vistaJuego = new FitViewport(SonicProject.V_ANCHO / SonicProject.PPM,SonicProject.V_ALTO / SonicProject.PPM,camJuego);
 		
-		hc = new HiloCliente(this);
-		hc.start();
-		
 		//hud
 		hud = new Hud(juego.batch);
 		
@@ -93,20 +86,14 @@ public class PantallaJuego implements Screen {
 		
 		camJuego.position.set(vistaJuego.getWorldWidth() / 2, vistaJuego.getWorldHeight() / 2, 0);
 		
-		//box2d obj. y colisiones
-		mundo = new World(new Vector2(0, -9), true);
-		b2dr = new Box2DDebugRenderer();
+		jugador = new Sonic(this);
+		jugadorAlt = new Tails(this);
 		
-		new B2CreaMundos(mundo, mapa);
-		
-		jugador = new Sonic(mundo, this);
-		jugadorAlt = new Tails(mundo, this);
-		
-		mundo.setContactListener(new WorldContactListener());
+		hc = new HiloCliente(this);
+		hc.start();
 		
         SonicProject.admin.get("audio/musica/menu.mp3", Music.class).stop();
         SonicProject.admin.get("audio/musica/gameOver.mp3", Music.class).stop();
-        SonicProject.admin.get("audio/musica/pantallaJuego.mp3", Music.class).play();
 	}
 	
 	public TextureAtlas getAtlas() {
@@ -123,76 +110,26 @@ public class PantallaJuego implements Screen {
 	
 	public void handleInput() {
 		if(jugador.estadoActual != Sonic.Estado.MUERTO && jugadorAlt.estadoActual != Tails.Estado.MUERTO) {
-			if(Gdx.input.isKeyJustPressed(Input.Keys.UP) && jugador.estadoActual != Sonic.Estado.SALTANDO) {
+			if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
 				hc.enviarMensaje("teclaArriba");
-				SonicProject.admin.get("audio/sonidos/s_salto.wav", Sound.class).play();
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 				hc.enviarMensaje("teclaDer");
-//				jugador.golpe();
-//				jugador.b2cuerpo.applyLinearImpulse(new Vector2(0.105f, 0), jugador.b2cuerpo.getWorldCenter(), true);
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 				hc.enviarMensaje("teclaIzq");
-//				jugador.b2cuerpo.applyLinearImpulse(new Vector2(-0.105f, 0), jugador.b2cuerpo.getWorldCenter(), true);
 			}
 		}
-//		
-//		if(jugadorAlt.estadoActual != Tails.Estado.MUERTO) {
-//			if(Gdx.input.isKeyJustPressed(Input.Keys.W) && jugadorAlt.estadoActual != Tails.Estado.SALTANDO) {
-//				jugadorAlt.b2cuerpo.applyLinearImpulse(new Vector2(0, 6f), jugadorAlt.b2cuerpo.getWorldCenter(), true);
-//				SonicProject.admin.get("audio/sonidos/t_salto.wav", Sound.class).play();
-//			}
-//			if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-////				jugadorAlt.golpe();
-//				jugadorAlt.b2cuerpo.applyLinearImpulse(new Vector2(0.1f, 0), jugadorAlt.b2cuerpo.getWorldCenter(), true);
-//			}
-//			if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-//				jugadorAlt.b2cuerpo.applyLinearImpulse(new Vector2(-0.1f, 0), jugadorAlt.b2cuerpo.getWorldCenter(), true);
-//			}
-//		}
 	}
 	
 	public void update(float dt) {
 	    handleInput();
 
-	    mundo.step(1 / 60f, 6, 2);
-
 	    jugador.update(dt);
 	    jugadorAlt.update(dt);
 	    hud.update(dt);
-
-	    float limiteIzquierdo = 3.5f;
-	    float limiteDerecho = 20.25f;
-	    float limiteInferior = 2.55f; 
-	    float limiteSuperior = 55.0f;
-	    float posX = jugador.b2cuerpo.getPosition().x;
-	    float posY = jugador.b2cuerpo.getPosition().y;
-
-
-	    // Asegurarse de que el personaje no se salga del límite izquierdo
-	    if (posX < limMapa1) {
-	        jugador.b2cuerpo.setTransform(limMapa1, jugador.b2cuerpo.getPosition().y, 0);
-	    }
 	    
-	    if (posY < limMapa1) {
-	        jugador.golpe();
-	        jugadorAlt.golpe();
-	    }
-
-	    // Asegurarse de que el personaje no se salga del límite derecho
-	    if (posX > limMapa2) {
-	        jugador.b2cuerpo.setTransform(limMapa2, jugador.b2cuerpo.getPosition().y, 0);
-	    }
-
-	    
-	    if (posX > limiteIzquierdo && posX < limiteDerecho) {
-	        camJuego.position.x = posX;
-	    }
-	    
-	    if (posY > limiteInferior && posY < limiteSuperior) {
-	        camJuego.position.y = posY;
-	    }
+	    camJuego.position.set(jugador.getX(), jugador.getY(), 0);
 
 	    camJuego.update();
 	    renderizar.setView(camJuego);
@@ -206,14 +143,13 @@ public class PantallaJuego implements Screen {
 		}else {
 			update(delta);
 			
+			SonicProject.admin.get("audio/musica/pantallaJuego.mp3", Music.class).play();
+			
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 			
 			fondo.render(0.80f, 75);
 			renderizar.render();
-			
-			//box2d
-			b2dr.render(mundo, camJuego.combined);
 			
 			juego.batch.setProjectionMatrix(camJuego.combined);
 			juego.batch.begin();
@@ -225,12 +161,10 @@ public class PantallaJuego implements Screen {
 			hud.escenario.draw();
 			
 		    if (FinJuego()) {
-		        tiempoEspera -= delta; // Reduzca el tiempo de espera
-
+		        tiempoEspera -= delta;
 		        if (tiempoEspera <= 0 && !cambioPantalla) {
-		            // Cuando el tiempo de espera haya transcurrido y no hayamos cambiado de pantalla aún
 		            juego.setScreen(new PantallaGameOver(juego));
-		            cambioPantalla = true; // Evita que cambiemos de pantalla varias veces
+		            cambioPantalla = true;
 		        }
 		    }
 		}
