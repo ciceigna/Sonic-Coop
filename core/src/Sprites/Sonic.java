@@ -1,20 +1,20 @@
 package Sprites;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.sonic.fangame.SonicProject;
 import com.badlogic.gdx.utils.Array;
 import Pantallas.PantallaJuego;
 
 
 public class Sonic extends Sprite {
-	public enum Estado{CAYENDO,SALTANDO,PARADO,CORRIENDO, VELOCIDAD_MAXIMA, MUERTO}
+	public enum Estado{CAYENDO,SALTANDO,PARADO,CORRIENDO, CORRIENDO_IZQ, MUERTO}
 	public Estado estadoActual;
 	public Estado estadoPrevio;
-	//public World mundo;
-//	public Body b2cuerpo;
 	
 	private TextureRegion sonicQuieto;
 	private TextureRegion sonicMuerto;
@@ -26,9 +26,8 @@ public class Sonic extends Sprite {
 	
 	private float estadoTiempo;
 	
-	public Sonic(/*World mundo, */PantallaJuego pantalla) {
-	    super(pantalla.getAtlas().findRegion("basicMotion1")); // Inicializa con la primera región de "basicMotion"
-	    //this.mundo = mundo;
+	public Sonic(PantallaJuego pantalla) {
+	    super(pantalla.getAtlas().findRegion("basicMotion1"));
 	    estadoActual = Estado.PARADO;
 	    estadoPrevio = Estado.PARADO;
 	    estadoTiempo = 0;
@@ -36,7 +35,6 @@ public class Sonic extends Sprite {
 	    
 	    Array<TextureRegion> frames = new Array<TextureRegion>();
 
-	    // Carga las regiones etiquetadas como "basicMotion" desde el atlas
 	    for (int i = 1; i <= 8; i++) {
 	        regionName = "basicMotion" + i;
 	        frames.add(pantalla.getAtlas().findRegion(regionName));
@@ -53,39 +51,26 @@ public class Sonic extends Sprite {
 	    sonicCorre = new Animation<TextureRegion>(0.1f, frames);
 	    frames.clear();
 
-//	    defineSonic();
 	    sonicQuieto = new TextureRegion(getTexture(), 1410, 2, 27, 59);
 	    sonicMuerto = new TextureRegion(getTexture(), 768, 2, 34, 59);
 	    setBounds(200 / SonicProject.PPM,775 / SonicProject.PPM, getWidth() / SonicProject.PPM, getHeight() / SonicProject.PPM);
 	    setRegion(sonicQuieto);
 	}
 
-//	public void golpe() {
-//		if(tieneAnillos) {
-//			tieneAnillos=false;
-//			
-//		}
-//		else {
-//			Filter filtro = new Filter();
-//			filtro.maskBits = SonicProject.BIT_VACIO;
-//
-//			SonicProject.admin.get("audio/sonidos/s_muerte.wav", Sound.class).play();
-//			for(Fixture fixture : b2cuerpo.getFixtureList()) {
-//				fixture.setFilterData(filtro);
-//			}
-//			b2cuerpo.applyLinearImpulse(new Vector2(0, 3f), b2cuerpo.getWorldCenter(), true);
-//			murioSonic = true;
-////		}
-//	}
+	public void golpe() {
+		Filter filtro = new Filter();
+		filtro.maskBits = SonicProject.BIT_VACIO;
+
+		SonicProject.admin.get("audio/sonidos/s_muerte.wav", Sound.class).play();
+		murioSonic = true;
+}
 	
 	public void update(float dt) {
-//		setPosition(b2cuerpo.getPosition().x - getWidth() / 2, b2cuerpo.getPosition().y - getHeight() / 2);
 		setRegion(getFrame(dt));
 		
 	}
 	
 	public TextureRegion getFrame(float dt) {
-	    //estadoActual = getEstado();
 
 	    TextureRegion region;
 	    switch (estadoActual) {
@@ -97,9 +82,15 @@ public class Sonic extends Sprite {
 	            break;
 	        case CORRIENDO:
 	            region = sonicCorre.getKeyFrame(estadoTiempo, true);
+    	        if (region.isFlipX()) {
+    	            region.flip(true, false);
+    	        }
 	            break;
-	        case VELOCIDAD_MAXIMA:
-	            region = sonicVelMax.getKeyFrame(estadoTiempo, true);
+	        case CORRIENDO_IZQ:
+	            region = sonicCorre.getKeyFrame(estadoTiempo, true);
+		        if (!region.isFlipX()) {
+		            region.flip(true, false);
+		        }
 	            break;
 	        case CAYENDO:
 	        case PARADO:
@@ -108,34 +99,12 @@ public class Sonic extends Sprite {
 	            break;
 	    }
 
-//	    if (b2cuerpo.getLinearVelocity().x < 0) {
-//	        if (!region.isFlipX()) {
-//	            region.flip(true, false);
-//	        }
-//	    } else if (b2cuerpo.getLinearVelocity().x > 0) {
-//	        if (region.isFlipX()) {
-//	            region.flip(true, false);
-//	        }
-//	    }
+	    if (dt > 0) {
+	        estadoTiempo = estadoActual == estadoPrevio ? estadoTiempo + dt : 0;
+	    }
 
-	    estadoTiempo = estadoActual == estadoPrevio ? estadoTiempo + dt : 0;
 	    estadoPrevio = estadoActual;
 	    return region;
 	}
-
-	
-//	public Estado getEstado() {
-//		if(murioSonic)
-//			return Estado.MUERTO;
-//		else if(b2cuerpo.getLinearVelocity().y > 0 || (b2cuerpo.getLinearVelocity().y < 0 && estadoPrevio == Estado.SALTANDO)) 
-//			return Estado.SALTANDO;
-//		else if(b2cuerpo.getLinearVelocity().y < 0)
-//			return Estado.CAYENDO;
-//		else if(b2cuerpo.getLinearVelocity().x != 0)
-//			return Estado.CORRIENDO;
-//		else 
-//			return Estado.PARADO;
-//	}
-	
 	
 }

@@ -17,5 +17,5 @@ public abstract class Enemigo extends Sprite {
 		setPosition(x, y);
 	}
 	
-	protected abstract void defineEnemigo();
+//	protected abstract void defineEnemigo();
 }

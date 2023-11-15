@@ -4,29 +4,29 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.sonic.fangame.SonicProject;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Array;
 import Pantallas.PantallaJuego;
 
 
 public class Tails extends Sprite {
-	public enum Estado{CAYENDO,SALTANDO,PARADO,CORRIENDO, VELOCIDAD_MAXIMA, MUERTO}
+	public enum Estado{CAYENDO,SALTANDO,PARADO,CORRIENDO, CORRIENDO_IZQ, MUERTO}
 	public Estado estadoActual;
 	public Estado estadoPrevio;
-	//public World mundo;
-//	public Body b2cuerpo;
 	
 	private Animation<TextureRegion> TailsQuieto;
 	private TextureRegion TailsMuerto;
 	private Animation<TextureRegion> TailsCorre;
 	private Animation<TextureRegion> TailsSalta;
-	private Animation<TextureRegion> TailsVelMax;
 	
 	private float estadoTiempo;
+	private boolean murioTails = false;
 	
-	public Tails(/*World mundo,*/ PantallaJuego pantalla) {
-	    super(pantalla.getAtlasAlt().findRegion("basicMotion1")); // Inicializa con la primera región de "basicMotion"
-	    //this.mundo = mundo;
+	public Tails(PantallaJuego pantalla) {
+	    super(pantalla.getAtlasAlt().findRegion("basicMotion1"));
 	    estadoActual = Estado.PARADO;
 	    estadoPrevio = Estado.PARADO;
 	    estadoTiempo = 0;
@@ -50,9 +50,6 @@ public class Tails extends Sprite {
 	    // Crea la animación
 	    TailsCorre = new Animation<TextureRegion>(0.1f, frames);
 	    frames.clear();
-
-	    TailsQuieto = new Animation<TextureRegion>(0.1f, frames);
-	    frames.clear();
 	    
 	 // Carga al tails quieto
 	    for (int i = 1; i <= 4; i++) {
@@ -68,23 +65,14 @@ public class Tails extends Sprite {
 	    setRegion(TailsQuieto.getKeyFrame(estadoTiempo, true));
 
 	}
-//	public void golpe() {
-//		if(tieneAnillos) {
-//			tieneAnillos=false;
-//			
-//		}
-//		else {
-//			Filter filtro = new Filter();
-//			filtro.maskBits = SonicProject.BIT_VACIO;
-//
-//			SonicProject.admin.get("audio/sonidos/s_muerte.wav", Sound.class).play();
-//			for(Fixture fixture : b2cuerpo.getFixtureList()) {
-//				fixture.setFilterData(filtro);
-//			}
-//			b2cuerpo.applyLinearImpulse(new Vector2(0, 4f), b2cuerpo.getWorldCenter(), true);
-//			murioTails = true;
-//			}
-//	}
+	
+	public void golpe() {
+			Filter filtro = new Filter();
+			filtro.maskBits = SonicProject.BIT_VACIO;
+
+			SonicProject.admin.get("audio/sonidos/t_muerte.wav", Sound.class).play();
+			murioTails = true;
+	}
 	
 	public void update(float dt) {
 		setRegion(getFrame(dt));
@@ -92,7 +80,6 @@ public class Tails extends Sprite {
 	}
 	
 	public TextureRegion getFrame(float dt) {
-//	    estadoActual = getEstado();
 
 	    TextureRegion region;
 	    switch (estadoActual) {
@@ -104,9 +91,15 @@ public class Tails extends Sprite {
 	            break;
 	        case CORRIENDO:
 	            region = TailsCorre.getKeyFrame(estadoTiempo, true);
+    	        if (region.isFlipX()) {
+    	            region.flip(true, false);
+    	        }
 	            break;
-	        case VELOCIDAD_MAXIMA:
-	            region = TailsVelMax.getKeyFrame(estadoTiempo, true);
+	        case CORRIENDO_IZQ:
+	            region = TailsCorre.getKeyFrame(estadoTiempo, true);
+		        if (!region.isFlipX()) {
+		            region.flip(true, false);
+		        }
 	            break;
 	        case CAYENDO:
 	        case PARADO:
@@ -122,19 +115,5 @@ public class Tails extends Sprite {
 	    estadoPrevio = estadoActual;
 	    return region;
 	}
-
-	
-//	public Estado getEstado() {
-//		if(murioTails)
-//			return Estado.MUERTO;
-//		else if(b2cuerpo.getLinearVelocity().y > 0 || (b2cuerpo.getLinearVelocity().y < 0 && estadoPrevio == Estado.SALTANDO)) 
-//			return Estado.SALTANDO;
-//		else if(b2cuerpo.getLinearVelocity().y < 0)
-//			return Estado.CAYENDO;
-//		else if(b2cuerpo.getLinearVelocity().x != 0)
-//			return Estado.CORRIENDO;
-//		else 
-//			return Estado.PARADO;
-//	}
 	
 }

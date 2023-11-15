@@ -3,6 +3,7 @@ package Pantallas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -20,8 +21,10 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.reactive.sonic.red.HiloCliente;
 import com.sonic.fangame.SonicProject;
+
 import Escenas.FondoParallax;
 import Escenas.Hud;
+import Sprites.Buzzer;
 import Sprites.Sonic;
 import Sprites.Tails;
 import utiles.Global;
@@ -31,11 +34,15 @@ public class PantallaJuego implements Screen {
 	private SonicProject juego;
 	public OrthographicCamera camJuego;
 	private Viewport vistaJuego; 
+	
 	private TextureAtlas atlas;
 	private TextureAtlas atlasAlt;
+	private TextureAtlas enemigos;
 	public Sonic jugador;
 	public Tails jugadorAlt;
-    float limMapa1 = 0.25f;
+	public Buzzer buzzer;
+	
+	float limMapa1 = 0.25f;
     float limMapa2 = 23.5f;
     private HiloCliente hc;
     Texture esperaTextura;
@@ -72,6 +79,8 @@ public class PantallaJuego implements Screen {
         
 		atlas = new TextureAtlas("texturaSonic.atlas");
 		atlasAlt = new TextureAtlas("texturaTails.atlas");
+		enemigos = new TextureAtlas("texturaEnemigos.atlas");
+		
 		camJuego = new OrthographicCamera();
 		vistaJuego = new FitViewport(SonicProject.V_ANCHO / SonicProject.PPM,SonicProject.V_ALTO / SonicProject.PPM,camJuego);
 		
@@ -88,7 +97,7 @@ public class PantallaJuego implements Screen {
 		
 		jugador = new Sonic(this);
 		jugadorAlt = new Tails(this);
-		
+		buzzer = new Buzzer(this,  200 / SonicProject.PPM, 800 / SonicProject.PPM);
 		hc = new HiloCliente(this);
 		hc.start();
 		
@@ -103,6 +112,10 @@ public class PantallaJuego implements Screen {
 	public TextureAtlas getAtlasAlt() {
 		return atlasAlt;
 	}
+
+	public TextureAtlas getEnemigos() {
+		return enemigos;
+	}
 	
 	@Override
 	public void show() {
@@ -112,6 +125,7 @@ public class PantallaJuego implements Screen {
 		if(jugador.estadoActual != Sonic.Estado.MUERTO && jugadorAlt.estadoActual != Tails.Estado.MUERTO) {
 			if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
 				hc.enviarMensaje("teclaArriba");
+				SonicProject.admin.get("audio/sonidos/s_salto.wav", Sound.class).play();
 			}
 			if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 				hc.enviarMensaje("teclaDer");
@@ -127,6 +141,7 @@ public class PantallaJuego implements Screen {
 
 	    jugador.update(dt);
 	    jugadorAlt.update(dt);
+	    buzzer.update(dt);
 	    hud.update(dt);
 	    
 	    camJuego.position.set(jugador.getX(), jugador.getY(), 0);
@@ -155,6 +170,7 @@ public class PantallaJuego implements Screen {
 			juego.batch.begin();
 			jugador.draw(juego.batch);
 			jugadorAlt.draw(juego.batch);
+			buzzer.draw(juego.batch);
 			juego.batch.end();
 			
 			juego.batch.setProjectionMatrix(hud.escenario.getCamera().combined);
@@ -171,7 +187,7 @@ public class PantallaJuego implements Screen {
 	}
 	
 	public boolean FinJuego() {
-		if(jugador.estadoActual == Sonic.Estado.MUERTO) {
+		if(jugador.estadoActual == Sonic.Estado.MUERTO || jugadorAlt.estadoActual == Tails.Estado.MUERTO) {
 			return true;
 		}else {
 			return false;

@@ -76,6 +76,9 @@ public class HiloCliente extends Thread {
 	            } else if(mensajeParametrizado[1].equals("camara")) {
             		camJuego.position.x = camX;
             		camJuego.position.y = camY;
+	            } else if(mensajeParametrizado[1].equals("camaraAlt")) {
+            		camJuego.position.x = camX;
+            		camJuego.position.y = camY;
 	            }
 	     } else if (mensajeParametrizado[0].equals("Estado")) {
 	        	if (mensajeParametrizado[1].equals("jugador")) {
