@@ -3,24 +3,22 @@ package Sprites;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.physics.box2d.World;
-import com.sonic.fangame.SonicProject;
 
 import Escenas.Hud;
 
 public class Anillos extends ObjetoInteractivo {
 	
-	public Anillos(World mundo, TiledMap mapa, Rectangle bordes) {
-		super(mundo, mapa, bordes);	
+	public Anillos(/*World mundo,*/TiledMap mapa, Rectangle bordes) {
+		super(/*mundo,*/ mapa, bordes);	
+//		fixture.setUserData(this);
+//		setCategoryFilter(SonicProject.BIT_ANILLO);
 	}
-	
-//	@Override
-//	public void recogeAnillo() {
-//		Gdx.app.log("Anillo", "Colision");
-//		if(getCell().getTile().getId() == ANILLO_VACIO)
-//			SonicProject.admin.get("audio/sonidos/anillo.wav", Sound.class).play();
-//		getCell().setTile(tileSet.getTile(ANILLO_VACIO));
-//		Hud.addPuntuacion(100);
-//	}
+
+	@Override
+	public void esTocado() {
+		Gdx.app.log("Anillo", "Colision");
+		Hud.addPuntaje(100);
+		Hud.addAnillo(1);
+	}
 	
 }

@@ -35,9 +35,11 @@ public class PantallaJuego implements Screen {
 	public OrthographicCamera camJuego;
 	private Viewport vistaJuego; 
 	
-	private TextureAtlas atlas;
-	private TextureAtlas atlasAlt;
+	private TextureAtlas sonic;
+	private TextureAtlas tails;
 	private TextureAtlas enemigos;
+	private TextureAtlas objetos;
+	
 	public Sonic jugador;
 	public Tails jugadorAlt;
 	public Buzzer buzzer;
@@ -77,9 +79,10 @@ public class PantallaJuego implements Screen {
 		table.setFillParent(true);
 		stage.addActor(table);
         
-		atlas = new TextureAtlas("texturaSonic.atlas");
-		atlasAlt = new TextureAtlas("texturaTails.atlas");
+		sonic = new TextureAtlas("texturaSonic.atlas");
+		tails = new TextureAtlas("texturaTails.atlas");
 		enemigos = new TextureAtlas("texturaEnemigos.atlas");
+		objetos = new TextureAtlas("objetos.atlas");
 		
 		camJuego = new OrthographicCamera();
 		vistaJuego = new FitViewport(SonicProject.V_ANCHO / SonicProject.PPM,SonicProject.V_ALTO / SonicProject.PPM,camJuego);
@@ -97,7 +100,7 @@ public class PantallaJuego implements Screen {
 		
 		jugador = new Sonic(this);
 		jugadorAlt = new Tails(this);
-		buzzer = new Buzzer(this,  200 / SonicProject.PPM, 800 / SonicProject.PPM);
+		buzzer = new Buzzer(this, 1000 / SonicProject.PPM, 790 / SonicProject.PPM );
 		hc = new HiloCliente(this);
 		hc.start();
 		
@@ -105,16 +108,26 @@ public class PantallaJuego implements Screen {
         SonicProject.admin.get("audio/musica/gameOver.mp3", Music.class).stop();
 	}
 	
-	public TextureAtlas getAtlas() {
-		return atlas;
+	public TextureAtlas getTextura(TipoTextura tipo) {
+	    switch (tipo) {
+	        case SONIC:
+	            return sonic;
+	        case TAILS:
+	            return tails;
+	        case ENEMIGOS:
+	            return enemigos;
+	        case OBJETOS:
+	            return objetos;
+	        default:
+	            return null;
+	    }
 	}
 	
-	public TextureAtlas getAtlasAlt() {
-		return atlasAlt;
-	}
-
-	public TextureAtlas getEnemigos() {
-		return enemigos;
+	public enum TipoTextura {
+	    SONIC,
+	    TAILS,
+	    ENEMIGOS,
+	    OBJETOS
 	}
 	
 	@Override
@@ -144,8 +157,11 @@ public class PantallaJuego implements Screen {
 	    buzzer.update(dt);
 	    hud.update(dt);
 	    
-	    camJuego.position.set(jugador.getX(), jugador.getY(), 0);
-
+	    if (Global.esPrimerCliente) {
+	        camJuego.position.set(jugador.getX(), jugador.getY(), 0);
+	    } else{
+	        camJuego.position.set(jugadorAlt.getX(), jugadorAlt.getY(), 0);
+	    }
 	    camJuego.update();
 	    renderizar.setView(camJuego);
 	}

@@ -58,6 +58,8 @@ public class HiloCliente extends Thread {
 	    if (mensajeParametrizado.length < 2) {
 	        if (msg.equals("OK")) {
 	            ipServidor = dp.getAddress();
+	        } else if (msg.equals("primero")) {
+	        	Global.esPrimerCliente = true;
 	        } else if (msg.equals("Empieza")) {
 	            Global.empieza = true;
 	        }

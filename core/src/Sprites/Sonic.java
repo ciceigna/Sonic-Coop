@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.sonic.fangame.SonicProject;
 import com.badlogic.gdx.utils.Array;
 import Pantallas.PantallaJuego;
+import Pantallas.PantallaJuego.TipoTextura;
 
 
 public class Sonic extends Sprite {
@@ -20,14 +21,12 @@ public class Sonic extends Sprite {
 	private TextureRegion sonicMuerto;
 	private Animation<TextureRegion> sonicCorre;
 	private Animation<TextureRegion> sonicSalta;
-	private Animation<TextureRegion> sonicVelMax;
-	
 	private boolean murioSonic = false;
 	
 	private float estadoTiempo;
 	
 	public Sonic(PantallaJuego pantalla) {
-	    super(pantalla.getAtlas().findRegion("basicMotion1"));
+	    super(pantalla.getTextura(TipoTextura.SONIC).findRegion("basicMotion1"));
 	    estadoActual = Estado.PARADO;
 	    estadoPrevio = Estado.PARADO;
 	    estadoTiempo = 0;
@@ -37,13 +36,13 @@ public class Sonic extends Sprite {
 
 	    for (int i = 1; i <= 8; i++) {
 	        regionName = "basicMotion" + i;
-	        frames.add(pantalla.getAtlas().findRegion(regionName));
+	        frames.add(pantalla.getTextura(TipoTextura.SONIC).findRegion(regionName));
 	    }
 
 	    Array<TextureAtlas.AtlasRegion> regionesSalto = new Array<>();
 	    for (int i = 1; i <= 4; i++) {
 	    	regionName = "bola" + i;
-	        regionesSalto.add(pantalla.getAtlas().findRegion(regionName));
+	        regionesSalto.add(pantalla.getTextura(TipoTextura.SONIC).findRegion(regionName));
 	    }
 	    sonicSalta = new Animation<TextureRegion>(0.08f, regionesSalto);
 
@@ -53,7 +52,7 @@ public class Sonic extends Sprite {
 
 	    sonicQuieto = new TextureRegion(getTexture(), 1410, 2, 27, 59);
 	    sonicMuerto = new TextureRegion(getTexture(), 768, 2, 34, 59);
-	    setBounds(200 / SonicProject.PPM,775 / SonicProject.PPM, getWidth() / SonicProject.PPM, getHeight() / SonicProject.PPM);
+	    setBounds(0,0, getWidth() / SonicProject.PPM, getHeight() / SonicProject.PPM);
 	    setRegion(sonicQuieto);
 	}
 
@@ -61,13 +60,10 @@ public class Sonic extends Sprite {
 		Filter filtro = new Filter();
 		filtro.maskBits = SonicProject.BIT_VACIO;
 
-		SonicProject.admin.get("audio/sonidos/s_muerte.wav", Sound.class).play();
-		murioSonic = true;
 }
 	
 	public void update(float dt) {
 		setRegion(getFrame(dt));
-		
 	}
 	
 	public TextureRegion getFrame(float dt) {
@@ -76,6 +72,8 @@ public class Sonic extends Sprite {
 	    switch (estadoActual) {
 		    case MUERTO:
 		    	region = sonicMuerto;
+				SonicProject.admin.get("audio/sonidos/s_muerte.wav", Sound.class).play();
+				murioSonic = true;
 		    	break;
 	        case SALTANDO:
 	            region = sonicSalta.getKeyFrame(estadoTiempo, true);
